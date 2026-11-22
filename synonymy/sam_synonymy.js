@@ -93,15 +93,22 @@ function findCandidateBuckets(buckets, key, mode) {
   return matches;
 }
 
-function renderResults(queryRaw, key, items, mode) {
+function formatDef(str) {
+  return escapeHtml(String(str || '').replace(/<DR\s*\/?>/gi, ' ')).replace(/\s{2,}/g, ' ');
+}
+
+function renderResults(queryRaw, key, items, mode, scope) {
+  const scopeLabel = scope === 'syn_only' ? '유의어가 있는 표제어' : '전체 표제어';
+  const modeLabel = mode === 'exact' ? '일치' : '시작 문자';
   if (!items.length) {
-    els.results.innerHTML = `<div class="empty-state"><strong>"${escapeHtml(queryRaw)}"</strong>에 해당하는 표제어를 찾지 못했습니다.</div>`;
+    els.results.innerHTML = `<div class="empty-state"><strong>"${escapeHtml(queryRaw)}"</strong> (${modeLabel} · ${scopeLabel})에 해당하는 표제어를 찾지 못했습니다.</div>`;
     return;
   }
 
   const maxShow = 200;
   const shown = items.slice(0, maxShow);
-  const statusHtml = `<div class="status-line">"${escapeHtml(queryRaw)}" 검색 결과: 총 <strong>${items.length.toLocaleString()}</strong>개 표제어${items.length > maxShow ? ` (상위 ${maxShow}개 표시)` : ''}</div>`;
+  const totalSensesCount = items.reduce((acc, row) => acc + (row[2]?.length || 0), 0);
+  const statusHtml = `<div class="status-line">"${escapeHtml(queryRaw)}" 검색 결과 (${modeLabel} · ${scopeLabel}): 총 <strong>${items.length.toLocaleString()}</strong>개 표제어, <strong>${totalSensesCount.toLocaleString()}</strong>개 뜻풀이${items.length > maxShow ? ` (상위 ${maxShow}개 표시)` : ''}</div>`;
 
   const cardsHtml = shown
     .map(([k, displayWord, senses]) => {
@@ -124,7 +131,7 @@ function renderResults(queryRaw, key, items, mode) {
             <div class="sense-item">
               <div class="sense-def">
                 ${senses.length > 1 ? `<span class="sense-num">${idx + 1}.</span>` : ''}
-                ${posBadge}${escapeHtml(defn)}
+                ${posBadge}${formatDef(defn)}
               </div>
               ${synHtml}
             </div>
@@ -166,7 +173,7 @@ async function runSearch(rawQuery, pushHash = true) {
     const meta = await loadMeta();
     const bucketFiles = findCandidateBuckets(meta.buckets, key, mode);
     if (!bucketFiles.length) {
-      renderResults(q, key, [], mode);
+      renderResults(q, key, [], mode, scope);
       return;
     }
 
@@ -194,7 +201,7 @@ async function runSearch(rawQuery, pushHash = true) {
       return a[0].localeCompare(b[0], 'ko');
     });
 
-    renderResults(q, key, matched, mode);
+    renderResults(q, key, matched, mode, scope);
   } catch (err) {
     els.results.innerHTML = `<div class="empty-state">오류가 발생했습니다: ${escapeHtml(err.message)}</div>`;
   }
