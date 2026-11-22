@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>한국어기초사전 유의어·반의어 사전 (krdict_syn_ant)</title>
+  <link rel="stylesheet" href="./krdict_syn_ant.css?v=20261122a" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-top">
+        <span class="badge">한국어기초사전 기반</span>
+        <span id="stats-badge" class="stats-badge">데이터 정보 불러오는 중...</span>
+      </div>
+      <h1>한국어기초사전 유의어 · 반의어 사전</h1>
+      <p class="subtitle">표제어와 뜻풀이별 유의어·반의어(반대말)를 검색하고, 관련 어휘를 클릭해 연쇄 탐색할 수 있습니다.</p>
+
+      <form id="search-form" class="search-bar" autocomplete="off">
+        <input
+          id="search-input"
+          type="search"
+          placeholder="검색할 표제어를 입력하세요 (예: 사랑, 크다, 가다, 희망)"
+          aria-label="표제어 검색"
+          autofocus
+        />
+        <select id="search-mode" aria-label="검색 방식">
+          <option value="exact" selected>일치</option>
+          <option value="prefix">시작 문자</option>
+        </select>
+        <select id="rel-scope" aria-label="검색 대상 범위">
+          <option value="rel_only" selected>유의어·반의어가 있는 표제어</option>
+          <option value="syn_only">유의어가 있는 표제어</option>
+          <option value="ant_only">반의어가 있는 표제어</option>
+          <option value="all">전체 표제어</option>
+        </select>
+        <button type="submit" id="search-btn">검색</button>
+      </form>
+
+      <div class="quick-examples">
+        <span>예시:</span>
+        <button type="button" class="example-btn" data-q="가">가</button>
+        <button type="button" class="example-btn" data-q="크다">크다</button>
+        <button type="button" class="example-btn" data-q="기쁨">기쁨</button>
+        <button type="button" class="example-btn" data-q="희망">희망</button>
+        <button type="button" class="example-btn" data-q="가치">가치</button>
+      </div>
+    </header>
+
+    <main id="results-area" class="results-area">
+      <div class="empty-state">
+        검색어를 입력하면 해당 표제어의 <strong>품사 · 뜻풀이 · 유의어 · 반의어</strong>가 표시됩니다.
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>출처: 국립국어원 『한국어기초사전』 ·</span>
+      <code>krdict_syn_ant</code>
+    </footer>
+  </div>
+
+  <script src="./krdict_syn_ant.js?v=20261122a"></script>
+</body>
+</html>
