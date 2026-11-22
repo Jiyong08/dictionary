@@ -49,7 +49,18 @@ async function loadBucket(fileName) {
   if (bucketCache.has(fileName)) return bucketCache.get(fileName);
   const res = await fetch(`${DATA_BASE}/${fileName}`);
   if (!res.ok) throw new Error(`데이터 파일(${fileName}) 로드 실패`);
-  const data = await res.json();
+  let data;
+  if (fileName.endsWith('.gz')) {
+    if (typeof DecompressionStream !== 'undefined' && res.body) {
+      const ds = new DecompressionStream('gzip');
+      const decompressedStream = res.body.pipeThrough(ds);
+      data = await new Response(decompressedStream).json();
+    } else {
+      throw new Error('이 브라우저는 gzip 압축 해제를 지원하지 않습니다.');
+    }
+  } else {
+    data = await res.json();
+  }
   bucketCache.set(fileName, data);
   return data;
 }
@@ -70,12 +81,12 @@ function findCandidateBuckets(buckets, key, mode) {
     return [];
   }
 
-  // prefix 검색: 시작 키가 속하거나 겹치는 버킷(최대 4개)
+  // prefix 검색: 시작 키가 속하거나 겹치는 버킷(최대 16개)
   for (let i = 0; i < buckets.length; i++) {
     const [minK, maxK, fname] = buckets[i];
     if (maxK >= key && (minK <= key || minK.startsWith(key))) {
       matches.push(fname);
-      if (matches.length >= 4) break;
+      if (matches.length >= 16) break;
     }
   }
   return matches;
@@ -83,11 +94,11 @@ function findCandidateBuckets(buckets, key, mode) {
 
 function renderResults(queryRaw, key, items, mode) {
   if (!items.length) {
-    els.results.innerHTML = `<div class="empty-state"><strong>"${escapeHtml(queryRaw)}"</strong>에 해당하는 유의어 항목을 찾지 못했습니다.</div>`;
+    els.results.innerHTML = `<div class="empty-state"><strong>"${escapeHtml(queryRaw)}"</strong>에 해당하는 표제어를 찾지 못했습니다.</div>`;
     return;
   }
 
-  const maxShow = 60;
+  const maxShow = 200;
   const shown = items.slice(0, maxShow);
   const statusHtml = `<div class="status-line">"${escapeHtml(queryRaw)}" 검색 결과: 총 <strong>${items.length.toLocaleString()}</strong>개 표제어${items.length > maxShow ? ` (상위 ${maxShow}개 표시)` : ''}</div>`;
 
@@ -96,22 +107,25 @@ function renderResults(queryRaw, key, items, mode) {
       const sensesHtml = senses
         .map(([pos, defn, syns], idx) => {
           const posBadge = pos ? `<span class="sense-pos">${escapeHtml(pos)}</span>` : '';
-          const synChips = syns
-            .map(
-              (sw) =>
-                `<button type="button" class="syn-chip" data-syn="${escapeHtml(sw)}" title="'${escapeHtml(sw)}' 유의어 검색">${escapeHtml(sw)}</button>`
-            )
-            .join('');
+          const synList = Array.isArray(syns) ? syns : [];
+          const synHtml = synList.length
+            ? `<div class="syn-list">
+                <span class="syn-label">유의어</span>
+                ${synList
+                  .map(
+                    (sw) =>
+                      `<button type="button" class="syn-chip" data-syn="${escapeHtml(sw)}" title="'${escapeHtml(sw)}' 검색">${escapeHtml(sw)}</button>`
+                  )
+                  .join('')}
+              </div>`
+            : '';
           return `
             <div class="sense-item">
               <div class="sense-def">
                 ${senses.length > 1 ? `<span class="sense-num">${idx + 1}.</span>` : ''}
                 ${posBadge}${escapeHtml(defn)}
               </div>
-              <div class="syn-list">
-                <span class="syn-label">유의어</span>
-                ${synChips}
-              </div>
+              ${synHtml}
             </div>
           `;
         })
