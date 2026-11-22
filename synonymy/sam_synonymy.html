@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>우리말샘 유의어 사전 (sam_synonymy)</title>
+  <link rel="stylesheet" href="./sam_synonymy.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-top">
+        <span class="badge">우리말샘 기반</span>
+        <span id="stats-badge" class="stats-badge">데이터 정보 불러오는 중...</span>
+      </div>
+      <h1>우리말샘 유의어 사전</h1>
+      <p class="subtitle">표제어와 뜻풀이별 유의어(비슷한말)를 빠르게 검색하고, 유의어를 클릭해 연쇄 탐색할 수 있습니다.</p>
+
+      <form id="search-form" class="search-bar" autocomplete="off">
+        <input
+          id="search-input"
+          type="search"
+          placeholder="검색할 표제어를 입력하세요 (예: 사랑, 빠르다, 가다)"
+          aria-label="표제어 검색"
+          autofocus
+        />
+        <select id="search-mode" aria-label="검색 방식">
+          <option value="prefix">앞글자 · 정확 일치</option>
+          <option value="exact">정확 일치만</option>
+        </select>
+        <button type="submit" id="search-btn">검색</button>
+      </form>
+
+      <div class="quick-examples">
+        <span>예시:</span>
+        <button type="button" class="example-btn" data-q="사랑">사랑</button>
+        <button type="button" class="example-btn" data-q="기쁨">기쁨</button>
+        <button type="button" class="example-btn" data-q="아름답다">아름답다</button>
+        <button type="button" class="example-btn" data-q="생각">생각</button>
+        <button type="button" class="example-btn" data-q="모르는게약이다">모르는 게 약(이다)</button>
+      </div>
+    </header>
+
+    <main id="results-area" class="results-area">
+      <div class="empty-state">
+        검색어를 입력하면 해당 표제어의 <strong>품사 · 뜻풀이 · 유의어</strong>가 표시됩니다.
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>출처: 국립국어원 『우리말샘』 유의어 데이터 추출 ·</span>
+      <code>sam_synonymy</code>
+    </footer>
+  </div>
+
+  <script src="./sam_synonymy.js"></script>
+</body>
+</html>
