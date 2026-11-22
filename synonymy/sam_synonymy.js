@@ -6,6 +6,7 @@ const els = {
   form: document.getElementById('search-form'),
   input: document.getElementById('search-input'),
   mode: document.getElementById('search-mode'),
+  scope: document.getElementById('syn-scope'),
   results: document.getElementById('results-area'),
   stats: document.getElementById('stats-badge'),
 };
@@ -150,6 +151,7 @@ async function runSearch(rawQuery, pushHash = true) {
   if (!q) return;
   const key = cleanQuery(q);
   const mode = els.mode.value;
+  const scope = els.scope?.value || 'syn_only';
 
   if (pushHash) {
     const nextHash = `#q=${encodeURIComponent(q)}`;
@@ -173,7 +175,12 @@ async function runSearch(rawQuery, pushHash = true) {
     for (const rows of bucketArrays) {
       for (const row of rows) {
         const k = row[0];
-        if (mode === 'exact' ? k === key : k.startsWith(key)) {
+        if (!(mode === 'exact' ? k === key : k.startsWith(key))) continue;
+        if (scope === 'syn_only') {
+          const synSenses = (row[2] || []).filter((s) => Array.isArray(s[2]) && s[2].length > 0);
+          if (!synSenses.length) continue;
+          matched.push([row[0], row[1], synSenses]);
+        } else {
           matched.push(row);
         }
       }
@@ -196,6 +203,14 @@ async function runSearch(rawQuery, pushHash = true) {
 els.form.addEventListener('submit', (e) => {
   e.preventDefault();
   runSearch(els.input.value);
+});
+
+els.mode?.addEventListener('change', () => {
+  if (els.input.value.trim()) runSearch(els.input.value, false);
+});
+
+els.scope?.addEventListener('change', () => {
+  if (els.input.value.trim()) runSearch(els.input.value, false);
 });
 
 document.querySelectorAll('.example-btn').forEach((btn) => {

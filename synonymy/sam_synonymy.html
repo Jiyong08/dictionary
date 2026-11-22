@@ -25,8 +25,12 @@
           autofocus
         />
         <select id="search-mode" aria-label="검색 방식">
-          <option value="prefix">앞글자 · 정확 일치</option>
-          <option value="exact">정확 일치만</option>
+          <option value="exact" selected>일치</option>
+          <option value="prefix">시작 문자</option>
+        </select>
+        <select id="syn-scope" aria-label="검색 대상 범위">
+          <option value="syn_only" selected>유의어가 있는 표제어</option>
+          <option value="all">전체 표제어</option>
         </select>
         <button type="submit" id="search-btn">검색</button>
       </form>

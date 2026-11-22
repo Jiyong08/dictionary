@@ -93,7 +93,8 @@ h1 {
   border-color: var(--accent);
 }
 
-#search-mode {
+#search-mode,
+#syn-scope {
   padding: 0 12px;
   height: 46px;
   border: 1.5px solid var(--border);
