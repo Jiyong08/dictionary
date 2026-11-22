@@ -94,7 +94,20 @@ function findCandidateBuckets(buckets, key, mode) {
 }
 
 function formatDef(str) {
-  return escapeHtml(String(str || '').replace(/<DR\s*\/?>/gi, ' ')).replace(/\s{2,}/g, ' ');
+  let text = String(str || '')
+    .replace(/<(?:DR|BR)\s*\/?>/gi, ' ')
+    .replace(/<<?\/?(?:FL|IN|I|sense_no|span)(?:\s+[^>]*)?>/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  // <sub>, <sup>만 안전하게 첨자로 렌더링하고 나머지는 모두 HTML 이스케이프
+  const tokens = text.split(/(<\/?(?:sub|sup)>)/gi);
+  return tokens
+    .map((tok) => {
+      if (/^<(sub|sup)>$/i.test(tok)) return `<${tok.slice(1, -1).toLowerCase()}>`;
+      if (/^<\/(sub|sup)>$/i.test(tok)) return `</${tok.slice(2, -1).toLowerCase()}>`;
+      return escapeHtml(tok);
+    })
+    .join('');
 }
 
 function renderResults(queryRaw, key, items, mode, scope) {
