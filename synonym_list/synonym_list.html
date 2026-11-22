@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>유의어 목록 검색기 (synonym_list)</title>
+  <link rel="stylesheet" href="./synonym_list.css?v=20261122a" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-top">
+        <div class="nav-links">
+          <span class="badge">정선 유의어 목록</span>
+          <a class="nav-pill" href="../synonymy/sam_synonymy.html">우리말샘 유의어</a>
+          <a class="nav-pill" href="../basic_synonymy/krdict_syn_ant.html">한국어기초사전 유의어·반의어</a>
+        </div>
+        <span id="stats-badge" class="stats-badge">불러오는 중...</span>
+      </div>
+      <h1>유의어 목록 검색기</h1>
+      <p class="subtitle">좌우·상하 가나다순으로 정렬된 유의어 목록 전체를 보거나 키워드로 빠르게 검색할 수 있습니다.</p>
+
+      <div class="toolbar">
+        <form id="search-form" class="search-bar" autocomplete="off">
+          <input
+            id="search-input"
+            type="search"
+            placeholder="단어를 입력하면 포함된 유의어 묶음을 즉시 검색합니다 (비우면 전체 목록)"
+            aria-label="유의어 목록 검색"
+          />
+          <button type="submit" id="search-btn">검색</button>
+          <button type="button" id="reset-btn" class="ghost-btn">전체 보기</button>
+        </form>
+        <div class="action-buttons">
+          <button type="button" id="copy-txt-btn" class="ghost-btn">TXT 복사</button>
+          <button type="button" id="download-txt-btn" class="primary-btn">synonym_list.txt 다운로드</button>
+          <button type="button" id="clear-extra-btn" class="ghost-btn hidden">브라우저 추가분 초기화</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="results-area" class="results-area">
+      <div class="empty-state">유의어 목록을 불러오는 중...</div>
+    </main>
+
+    <footer class="footer">
+      <span>데이터 원본: <code>synonym_list.txt</code> (좌우 · 상하 가나다순 자동 정렬)</span>
+    </footer>
+  </div>
+
+  <script type="module" src="./synonym_list.js?v=20261122a"></script>
+</body>
+</html>

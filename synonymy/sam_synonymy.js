@@ -1,3 +1,6 @@
+import { addSynonymEntry } from '../synonym_list/synonym_store.js';
+
+const SYN_LIST_TXT_URL = '../synonym_list/synonym_list.txt';
 const DATA_BASE = './data';
 const bucketCache = new Map();
 let metaPromise = null;
@@ -138,6 +141,7 @@ function renderResults(queryRaw, key, items, mode, scope) {
                       `<button type="button" class="syn-chip" data-syn="${escapeHtml(sw)}" title="'${escapeHtml(sw)}' 검색">${escapeHtml(sw)}</button>`
                   )
                   .join('')}
+                <button type="button" class="add-syn-btn" data-words="${escapeHtml(JSON.stringify([displayWord, ...synList]))}">+ 유의어 목록 추가</button>
               </div>`
             : '';
           return `
@@ -241,7 +245,21 @@ document.querySelectorAll('.example-btn').forEach((btn) => {
   });
 });
 
-els.results.addEventListener('click', (e) => {
+els.results.addEventListener('click', async (e) => {
+  const addBtn = e.target.closest('.add-syn-btn[data-words]');
+  if (addBtn) {
+    try {
+      const words = JSON.parse(addBtn.dataset.words || '[]');
+      const res = await addSynonymEntry(words, SYN_LIST_TXT_URL);
+      addBtn.textContent = res.added ? '✓ 목록에 추가됨' : '이미 목록에 있음';
+      addBtn.classList.add('is-done');
+      if (!res.added && res.message) alert(res.message);
+    } catch (err) {
+      alert(`추가 실패: ${err.message}`);
+    }
+    return;
+  }
+
   const chip = e.target.closest('.syn-chip[data-syn]');
   if (!chip) return;
   const rawSyn = chip.dataset.syn || '';
