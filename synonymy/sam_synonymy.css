@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "KoPubWorldDotum";
+  src: url("./fonts/KoPubWorldDotumMedium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #f6f8fc;
   --card: #ffffff;
@@ -17,10 +25,16 @@
 
 body {
   margin: 0;
-  font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-family: "KoPubWorldDotum", "KoPubWorld Dotum Medium", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
 }
 
 .app-shell {
